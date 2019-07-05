@@ -1,4 +1,6 @@
 doc/
+.DS_Store
+python
 lib/
 obj/
 demos/lib/
@@ -9,6 +11,7 @@ demos/square_wellium_spherocylinder
 demos/square_wellium_wall
 demos/lennard_jonesium
 demos/patchy_disc
+demos/env
 demos/python/square_wellium
 demos/python/lennard_jonesium
 demos/python/patchy_disc
