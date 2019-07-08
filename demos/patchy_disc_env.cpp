@@ -39,7 +39,7 @@ class PatchyDiscEnv {
     double baseLength;                              // base length of simulation box
     unsigned int maxInteractions = 3;               // maximum number of interactions per particle (number of patches)
 
-    vmmc::VMMC vmmc; /// TODO: Why can't I do this?
+    vmmc::VMMC *vmmc;
     int width, height;
 public:
     PatchyDiscEnv(int a, int b){
@@ -49,7 +49,7 @@ public:
         // Data structures.
         std::vector<Particle> particles(nParticles);    // particle container
         CellList cells;                                 // cell list
-        bool isIsotropic[nParticles];   
+        bool isIsotropic[nParticles];
 
         // Resize particle container.
         particles.resize(nParticles);
@@ -129,11 +129,9 @@ public:
             std::bind(&PatchyDisc::applyPostMoveUpdates, patchyDisc, _1, _2);
     #endif
 
-        // Initialise VMMC object.
-        vmmc::VMMC vmmc(nParticles, dimension, coordinates, orientations,
-            0.15, 0.2, 0.5, 0.5, maxInteractions, &boxSize[0], isIsotropic, false, callbacks);
-
-
+    // Initialise VMMC object.
+    vmmc = new vmmc::VMMC(nParticles, dimension, coordinates, orientations,
+        0.15, 0.2, 0.5, 0.5, maxInteractions, &boxSize[0], isIsotropic, false, callbacks);
     }
     void execute(){
         for (unsigned int i=0;i<1000;i++)
@@ -171,7 +169,7 @@ int main(int argc, char** argv)
     double baseLength;                              // base length of simulation box
     unsigned int maxInteractions = 3;               // maximum number of interactions per particle (number of patches)
 
-    
+
 
     // Data structures.
     std::vector<Particle> particles(nParticles);    // particle container
