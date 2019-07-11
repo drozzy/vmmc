@@ -137,6 +137,15 @@ public:
     std::cout << "Initializer finished.\n";
 
     }
+
+    ~PatchyDiscEnv(){
+        std::cout << "Destructors.\n";
+        
+        delete patchyDisc;
+        std::cout << " PatchyDisk destroyed.\n";
+        delete vmmc;
+        std::cout << "VMMC destroyed.\n";
+    }
     void execute(){
         std::cout << "Execute entered.\n";
         for (unsigned int i=0;i<1000;i++)
