@@ -39,6 +39,7 @@ private:
     double density = 0.2;                           // particle density
     double baseLength;                              // base length of simulation box
     unsigned int maxInteractions = 3;               // maximum number of interactions per particle (number of patches)
+    bool new_episode = true; 
 
     std::vector<Particle> particles = std::vector<Particle>(nParticles);    // particle container
 
@@ -150,32 +151,26 @@ public:
         delete vmmc;
         std::cout << "VMMC destroyed.\n";
     }
-    void execute(){
-        std::cout << "Execute entered.\n";
-        for (unsigned int i=0;i<1000;i++)
-        {
-            // Increment simulation by 1000 Monte Carlo Sweeps.
-            std::cout << "  Particles...\n";
-            vmmc += 10*nParticles;
- 
-            std::cout << "  Trajectory\n";
 
-            // Append particle coordinates to an xyz trajectory.
-            if (i == 0) {
-                io.appendXyzTrajectory(dimension, particles, true);
-                std::cout << "  Append True\n";
-            }
-            else {
-                std::cout << "  Append False\n";
-                io.appendXyzTrajectory(dimension, particles, false);
-            }
-            std::cout << "Report\n";
-            // Report.
-            printf("sweeps = %9.4e, energy = %5.4f\n", ((double) (i+1)*1000), patchyDisc->getEnergy());
-            std::cout << "End report\n";
-        }
+    void reset(){
+        new_episode = true;
+    }
 
-        std::cout << "\nComplete!\n";
+    float step(){
+        std::cout << "Step entered.\n";
+
+        // Increment simulation by 1000 Monte Carlo Sweeps.
+        std::cout << "  Particles...\n";
+        vmmc += 1000*nParticles;
+
+        std::cout << "  Trajectory\n";
+
+        io.appendXyzTrajectory(dimension, particles, new_episode);
+        
+        new_episode = false;
+
+        // Return observation
+        return patchyDisc->getEnergy();
     }
 };
 
@@ -184,7 +179,14 @@ int main(int argc, char** argv)
 {
     PatchyDiscEnv env = PatchyDiscEnv();
     std::cout << "Beginning execution\n";
-    env.execute();
+    for (unsigned int i=0;i<1000;i++)
+    {
+
+        float state = env.step();
+        printf("Step energy = %5.4f\n", state);
+
+    }
+
     std::cout << "Ending execution\n";
 
     // We're done!
