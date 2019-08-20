@@ -42,8 +42,9 @@ private:
 
     std::vector<Particle> particles = std::vector<Particle>(nParticles);    // particle container
 
-    CellList cells;                                 // cell list
+    CellList *cells;                                 // cell list
 
+    Box *box;
     PatchyDisc *patchyDisc;
     // Initialise input/output class,
     InputOutput io;
@@ -69,17 +70,18 @@ public:
             boxSize.push_back(baseLength);
 
         // Initialise simulation box object.
-        Box box(boxSize);
+        box = new Box(boxSize);
 
         // Create VMD script.
         io.vmdScript(boxSize);
 
         // Initialise cell list.
-        cells.setDimension(dimension);
-        cells.initialise(box.boxSize, 1 + 0.5*interactionRange);
+        cells = new CellList;
+        cells->setDimension(dimension);
+        cells->initialise(box->boxSize, 1 + 0.5*interactionRange);
 
         // Initialise the patchy disc model.
-        patchyDisc = new PatchyDisc(box, particles, cells,
+        patchyDisc = new PatchyDisc(*box, particles, *cells,
             maxInteractions, interactionEnergy, interactionRange);
 
         // Initialise random number generator.
@@ -89,7 +91,7 @@ public:
         Initialise initialise;
 
         // Generate a random particle configuration.
-        initialise.random(particles, cells, box, rng, false);
+        initialise.random(particles, *cells, *box, rng, false);
 
         // Initialise data structures needed by the VMMC class.
         double coordinates[dimension*nParticles];
@@ -141,6 +143,8 @@ public:
     ~PatchyDiscEnv(){
         std::cout << "Destructors.\n";
         
+        delete box;
+        delete cells;
         delete patchyDisc;
         std::cout << " PatchyDisk destroyed.\n";
         delete vmmc;
